@@ -1,640 +1,900 @@
 <!doctype html>
 <html lang="en-GB">
+
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Measurement Method Finder | Linea</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Measurement Method Finder | Linea</title>
 
-  <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
-  <style>
-    :root{
-      /* Brand */
-      --mint: #21caab;
-      --pink: #FF0061;
-      --amber: #FFAB40;
+    <style>
+        :root {
+            --mint: #21caab;
+            --pink: #FF0061;
+            --amber: #FFAB40;
 
-      /* Neutrals */
-      --ink: #111C28;
-      --bg: #ffffff;
-      --muted: rgba(17, 28, 40, .68);
+            --ink: #111C28;
+            --bg: #ffffff;
+            --muted: rgba(17, 28, 40, .68);
 
-      /* Surfaces */
-      --card: rgba(17, 28, 40, .03);
-      --card2: rgba(17, 28, 40, .02);
-      --border: rgba(17, 28, 40, .10);
-      --shadow: 0 14px 40px rgba(17, 28, 40, .10);
-    }
+            --card: rgba(17, 28, 40, .03);
+            --card2: rgba(17, 28, 40, .02);
+            --border: rgba(17, 28, 40, .10);
+            --shadow: 0 14px 40px rgba(17, 28, 40, .10);
+        }
 
-    body{
-      color: var(--ink);
-      background:
-        radial-gradient(900px 520px at 10% 0%, rgba(33,202,171,.12), transparent 55%),
-        radial-gradient(820px 520px at 95% 10%, rgba(255,0,97,.08), transparent 55%),
-        radial-gradient(820px 520px at 70% 95%, rgba(255,171,64,.10), transparent 55%),
-        var(--bg);
-    }
+        body {
+            min-height: 100vh;
+            color: var(--ink);
+            background:
+                radial-gradient(900px 520px at 10% 0%, rgba(33, 202, 171, .12), transparent 55%),
+                radial-gradient(820px 520px at 95% 10%, rgba(255, 0, 97, .08), transparent 55%),
+                radial-gradient(820px 520px at 70% 95%, rgba(255, 171, 64, .10), transparent 55%),
+                var(--bg);
+        }
 
-    .kicker{
-      display:inline-flex;
-      align-items:center;
-      gap:.55rem;
-      padding:.38rem .72rem;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.70);
-      border-radius: 999px;
-      font-size: .92rem;
-      color: var(--muted);
-      backdrop-filter: blur(6px);
-    }
-    .dot{
-      width:.6rem;height:.6rem;border-radius:50%;
-      background: var(--mint);
-      box-shadow: 0 0 0 6px rgba(33,202,171,.14);
-    }
+        .kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: .55rem;
+            padding: .38rem .72rem;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, .70);
+            border-radius: 999px;
+            font-size: .92rem;
+            color: var(--muted);
+            backdrop-filter: blur(6px);
+        }
 
-    .cardx{
-      border: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,.90), rgba(255,255,255,.75));
-      border-radius: 1.25rem;
-      box-shadow: var(--shadow);
-    }
+        .dot {
+            width: .6rem;
+            height: .6rem;
+            border-radius: 50%;
+            background: var(--mint);
+            box-shadow: 0 0 0 6px rgba(33, 202, 171, .14);
+        }
 
-    .subtle{
-      background: linear-gradient(180deg, var(--card), var(--card2));
-      border: 1px solid rgba(17, 28, 40, .08);
-      border-radius: 1.05rem;
-    }
+        .cardx {
+            border: 1px solid var(--border);
+            background: linear-gradient(180deg, rgba(255, 255, 255, .90), rgba(255, 255, 255, .75));
+            border-radius: 1.25rem;
+            box-shadow: var(--shadow);
+        }
 
-    .small-muted{ color: var(--muted); }
+        .subtle {
+            background: linear-gradient(180deg, var(--card), var(--card2));
+            border: 1px solid rgba(17, 28, 40, .08);
+            border-radius: 1.05rem;
+        }
 
-    .h-title{
-      letter-spacing: -0.02em;
-    }
+        .small-muted {
+            color: var(--muted);
+        }
 
-    .form-control, .form-select{
-      background: rgba(255,255,255,.92);
-      border: 1px solid rgba(17, 28, 40, .14);
-      color: var(--ink);
-      border-radius: .95rem;
-      padding-top: .72rem;
-      padding-bottom: .72rem;
-    }
-    .form-control:focus, .form-select:focus{
-      border-color: rgba(33,202,171,.70);
-      box-shadow: 0 0 0 .25rem rgba(33,202,171,.18);
-    }
+        .h-title {
+            letter-spacing: -0.02em;
+        }
 
-    .form-check-input{
-      border: 1px solid rgba(17, 28, 40, .18);
-    }
-    .form-check-input:checked{
-      background-color: var(--mint);
-      border-color: rgba(33,202,171,.95);
-    }
+        .form-control,
+        .form-select {
+            background: rgba(255, 255, 255, .92);
+            border: 1px solid rgba(17, 28, 40, .14);
+            color: var(--ink);
+            border-radius: .95rem;
+            padding-top: .72rem;
+            padding-bottom: .72rem;
+        }
 
-    .btn-brand{
-      background: linear-gradient(135deg, rgba(33,202,171,1), rgba(33,202,171,.86));
-      color: #06211c;
-      border: 0;
-      border-radius: 1rem;
-      font-weight: 750;
-      padding: .78rem 1.05rem;
-      box-shadow: 0 12px 26px rgba(33,202,171,.22);
-    }
-    .btn-brand:hover{ filter: brightness(1.02); }
+        .form-control:focus,
+        .form-select:focus {
+            border-color: rgba(33, 202, 171, .70);
+            box-shadow: 0 0 0 .25rem rgba(33, 202, 171, .18);
+        }
 
-    .btn-ghost{
-      border: 1px solid rgba(17, 28, 40, .14);
-      background: rgba(255,255,255,.75);
-      color: var(--ink);
-      border-radius: 1rem;
-      padding: .78rem 1.05rem;
-    }
+        .form-check-input {
+            border: 1px solid rgba(17, 28, 40, .18);
+        }
 
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:.45rem;
-      padding:.38rem .72rem;
-      border-radius:999px;
-      border: 1px solid rgba(17, 28, 40, .12);
-      background: rgba(255,255,255,.80);
-      color: var(--muted);
-      font-size: .92rem;
-    }
-    .pill strong{ color: var(--ink); font-weight: 750; }
+        .form-check-input:checked {
+            background-color: var(--mint);
+            border-color: rgba(33, 202, 171, .95);
+        }
 
-    .rec-title{
-      font-weight: 800;
-      letter-spacing: -0.02em;
-    }
+        .btn-brand {
+            background: linear-gradient(135deg, rgba(33, 202, 171, 1), rgba(33, 202, 171, .86));
+            color: #06211c;
+            border: 0;
+            border-radius: 1rem;
+            font-weight: 750;
+            padding: .78rem 1.05rem;
+            box-shadow: 0 12px 26px rgba(33, 202, 171, .22);
+        }
 
-    .tag{
-      display:inline-flex;
-      align-items:center;
-      gap:.5rem;
-      padding:.35rem .7rem;
-      border-radius: 999px;
-      border: 1px solid rgba(17, 28, 40, .12);
-      background: rgba(33,202,171,.10);
-      color: rgba(17,28,40,.90);
-      font-weight: 700;
-    }
-    .tag .mini{
-      width:.55rem;height:.55rem;border-radius:50%;
-      background: var(--mint);
-    }
+        .btn-brand:hover {
+            filter: brightness(1.02);
+        }
 
-    .divider{ border-top: 1px solid rgba(17, 28, 40, .10); }
+        .btn-ghost {
+            border: 1px solid rgba(17, 28, 40, .14);
+            background: rgba(255, 255, 255, .75);
+            color: var(--ink);
+            border-radius: 1rem;
+            padding: .78rem 1.05rem;
+        }
 
-    .accent-mint{ color: var(--mint); }
-    .accent-pink{ color: var(--pink); }
-    .accent-amber{ color: var(--amber); }
-  </style>
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: .45rem;
+            padding: .38rem .72rem;
+            border-radius: 999px;
+            border: 1px solid rgba(17, 28, 40, .12);
+            background: rgba(255, 255, 255, .80);
+            color: var(--muted);
+            font-size: .92rem;
+            white-space: nowrap;
+        }
+
+        .pill strong {
+            color: var(--ink);
+            font-weight: 750;
+        }
+
+        .rec-title {
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .35rem .7rem;
+            border-radius: 999px;
+            border: 1px solid rgba(17, 28, 40, .12);
+            background: rgba(33, 202, 171, .10);
+            color: rgba(17, 28, 40, .90);
+            font-weight: 700;
+        }
+
+        .tag .mini {
+            width: .55rem;
+            height: .55rem;
+            border-radius: 50%;
+            background: var(--mint);
+        }
+
+        .divider {
+            border-top: 1px solid rgba(17, 28, 40, .10);
+        }
+
+        .accent-mint {
+            color: var(--mint);
+        }
+
+        /* Wizard bits */
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        .stepper {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            flex-wrap: wrap;
+        }
+
+        .step-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            border: 1px solid rgba(17, 28, 40, .14);
+            background: rgba(255, 255, 255, .8);
+            color: rgba(17, 28, 40, .55);
+        }
+
+        .step-dot.active {
+            border-color: rgba(33, 202, 171, .45);
+            background: rgba(33, 202, 171, .12);
+            color: rgba(17, 28, 40, .92);
+        }
+
+        .step-dot.done {
+            border-color: rgba(33, 202, 171, .60);
+            background: rgba(33, 202, 171, .18);
+            color: rgba(17, 28, 40, .92);
+        }
+
+        .step-line {
+            height: 2px;
+            width: 44px;
+            background: rgba(17, 28, 40, .10);
+        }
+    </style>
 </head>
 
 <body>
-  <div class="container py-4 py-lg-5">
-    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
-      <div>
-        <div class="kicker mb-2"><span class="dot"></span> Free tool</div>
-        <h1 class="display-6 fw-semibold mb-1 h-title">Which measurement method should you use?</h1>
-        <div class="small-muted">A quick diagnostic to pick MMM, MTA, lift testing, or a hybrid approach.</div>
-      </div>
-      <div class="d-flex flex-wrap gap-2">
-        <span class="pill"><strong>MMM</strong> holistic impact</span>
-        <span class="pill"><strong>MTA</strong> digital paths</span>
-        <span class="pill"><strong>Lift tests</strong> causal proof</span>
-      </div>
-    </div>
-
-    <div class="row g-4">
-      <!-- Inputs -->
-      <div class="col-12 col-lg-7">
-        <div class="cardx p-3 p-md-4">
-          <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+    <div class="container py-4 py-lg-5">
+        <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
             <div>
-              <h2 class="h5 mb-1">Inputs</h2>
-              <div class="small-muted">Answer honestly and keep it directional.</div>
+                <div class="kicker mb-2"><span class="dot"></span> Free tool</div>
+                <h1 class="display-6 fw-semibold mb-1 h-title">Which measurement method should you use?</h1>
+                <div class="small-muted">Answer a few questions. We’ll show the recommendation at the end.</div>
             </div>
-            <span class="pill"><span class="accent-mint">●</span> Takes ~30 seconds</span>
-          </div>
-
-          <div class="row g-3">
-            <div class="col-12">
-              <label class="form-label mb-2">Channels used</label>
-
-              <div class="row g-2">
-                <div class="col-12 col-md-6">
-                  <div class="subtle p-3">
-                    <div class="fw-semibold mb-2">Digital</div>
-                    <div class="form-check"><input class="form-check-input channel" type="checkbox" value="paid_search" id="c1"><label class="form-check-label" for="c1">Paid Search</label></div>
-                    <div class="form-check"><input class="form-check-input channel" type="checkbox" value="paid_social" id="c2"><label class="form-check-label" for="c2">Paid Social</label></div>
-                    <div class="form-check"><input class="form-check-input channel" type="checkbox" value="display" id="c3"><label class="form-check-label" for="c3">Display / Programmatic</label></div>
-                    <div class="form-check"><input class="form-check-input channel" type="checkbox" value="video" id="c4"><label class="form-check-label" for="c4">Video / YouTube</label></div>
-                    <div class="form-check"><input class="form-check-input channel" type="checkbox" value="affiliate" id="c5"><label class="form-check-label" for="c5">Affiliate</label></div>
-                    <div class="form-check"><input class="form-check-input channel" type="checkbox" value="retail_media" id="c6"><label class="form-check-label" for="c6">Retail Media</label></div>
-                    <div class="form-check"><input class="form-check-input channel" type="checkbox" value="email_crm" id="c7"><label class="form-check-label" for="c7">Email / CRM</label></div>
-                    <div class="form-check"><input class="form-check-input channel" type="checkbox" value="seo" id="c8"><label class="form-check-label" for="c8">SEO / Organic</label></div>
-                  </div>
-                </div>
-
-                <div class="col-12 col-md-6">
-                  <div class="subtle p-3">
-                    <div class="fw-semibold mb-2">Offline</div>
-                    <div class="form-check"><input class="form-check-input channel" type="checkbox" value="tv" id="c9"><label class="form-check-label" for="c9">TV</label></div>
-                    <div class="form-check"><input class="form-check-input channel" type="checkbox" value="radio" id="c10"><label class="form-check-label" for="c10">Radio</label></div>
-                    <div class="form-check"><input class="form-check-input channel" type="checkbox" value="ooh" id="c11"><label class="form-check-label" for="c11">Out of Home</label></div>
-                    <div class="form-check"><input class="form-check-input channel" type="checkbox" value="print" id="c12"><label class="form-check-label" for="c12">Print</label></div>
-                    <div class="form-check"><input class="form-check-input channel" type="checkbox" value="direct_mail" id="c13"><label class="form-check-label" for="c13">Direct Mail</label></div>
-                    <hr class="divider my-3">
-                    <div class="fw-semibold mb-2">Commercial levers</div>
-                    <div class="form-check"><input class="form-check-input channel" type="checkbox" value="promos" id="c14"><label class="form-check-label" for="c14">Promotions / Discounts</label></div>
-                    <div class="form-check"><input class="form-check-input channel" type="checkbox" value="in_store" id="c15"><label class="form-check-label" for="c15">In-store / Trade</label></div>
-                    <div class="form-check"><input class="form-check-input channel" type="checkbox" value="pr" id="c16"><label class="form-check-label" for="c16">PR / Sponsorships</label></div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="small-muted mt-2">If a channel is tiny or rare, leave it unticked.</div>
+            <div class="d-flex flex-wrap gap-2">
+                <span class="pill"><strong>MMM</strong> holistic impact</span>
+                <span class="pill"><strong>MTA</strong> digital paths</span>
+                <span class="pill"><strong>Lift tests</strong> causal proof</span>
             </div>
-
-            <div class="col-12 col-md-6">
-              <label class="form-label">Annual marketing budget (GBP)</label>
-              <input id="budget" type="number" class="form-control" min="0" step="1000" placeholder="e.g. 750000" />
-            </div>
-            <div class="col-12 col-md-6">
-              <label class="form-label">Annual revenue (GBP)</label>
-              <input id="revenue" type="number" class="form-control" min="0" step="100000" placeholder="e.g. 12000000" />
-            </div>
-
-            <div class="col-12 col-md-6">
-              <label class="form-label">Industry</label>
-              <select id="industry" class="form-select">
-                <option value="ecomm">Ecommerce</option>
-                <option value="subscription">Subscription</option>
-                <option value="leadgen">Lead generation</option>
-                <option value="retail">Retail (offline heavy)</option>
-                <option value="travel">Travel</option>
-                <option value="finance">Finance</option>
-                <option value="fmcg">FMCG</option>
-                <option value="b2b">B2B</option>
-                <option value="other" selected>Other</option>
-              </select>
-            </div>
-
-            <div class="col-12 col-md-6">
-              <label class="form-label">Number of markets</label>
-              <select id="markets" class="form-select">
-                <option value="1" selected>1</option>
-                <option value="2-5">2 to 5</option>
-                <option value="6+">6+</option>
-              </select>
-            </div>
-
-            <div class="col-12 col-md-6">
-              <label class="form-label">Weeks of historical data</label>
-              <select id="historyWeeks" class="form-select">
-                <option value="0-52">0 to 52</option>
-                <option value="53-104">53 to 104</option>
-                <option value="105-156">105 to 156</option>
-                <option value="156+" selected>156+</option>
-              </select>
-            </div>
-
-            <div class="col-12 col-md-6">
-              <label class="form-label">Online sales share</label>
-              <select id="onlineShare" class="form-select">
-                <option value="0-25">0 to 25%</option>
-                <option value="25-50">25 to 50%</option>
-                <option value="50-75">50 to 75%</option>
-                <option value="75+" selected>75%+</option>
-              </select>
-            </div>
-
-            <div class="col-12">
-              <div class="subtle p-3">
-                <div class="fw-semibold mb-2">Data readiness</div>
-                <div class="row g-2">
-                  <div class="col-12 col-md-6">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="weeklySpend" checked>
-                      <label class="form-check-label" for="weeklySpend">Weekly spend by channel exists</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="weeklyKpi" checked>
-                      <label class="form-check-label" for="weeklyKpi">Weekly KPI time series exists</label>
-                    </div>
-                  </div>
-
-                  <div class="col-12 col-md-6">
-                    <label class="form-label mb-1">Digital conversion tracking</label>
-                    <select id="trackingQuality" class="form-select">
-                      <option value="yes" selected>Good</option>
-                      <option value="partial">Partial</option>
-                      <option value="no">Poor</option>
-                    </select>
-                  </div>
-
-                  <div class="col-12 col-md-6">
-                    <label class="form-label mb-1">Can you run geo experiments?</label>
-                    <select id="geoAbility" class="form-select">
-                      <option value="yes">Yes</option>
-                      <option value="not_sure" selected>Not sure</option>
-                      <option value="no">No</option>
-                    </select>
-                  </div>
-
-                  <div class="col-12 col-md-6">
-                    <label class="form-label mb-1">Incrementality testing experience</label>
-                    <select id="incrExp" class="form-select">
-                      <option value="yes">Yes</option>
-                      <option value="no" selected>No</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-12 d-flex flex-wrap gap-2 pt-1 align-items-center">
-              <button class="btn btn-brand" id="runBtn">Get my recommendation</button>
-              <button class="btn btn-ghost" id="resetBtn">Reset</button>
-              <div class="ms-auto small-muted" id="statusText"></div>
-            </div>
-          </div>
         </div>
-      </div>
 
-      <!-- Outputs -->
-      <div class="col-12 col-lg-5">
-        <div class="cardx p-3 p-md-4 h-100">
-          <h2 class="h5 mb-3">Outputs</h2>
+        <div class="row g-4">
+            <!-- Wizard -->
+            <div id="wizContainer" class="col-12 col-lg-12">
+                <div class="cardx p-3 p-md-4">
+                    <div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-3">
+                        <div>
+                            <h2 class="h5 mb-1">Quick diagnostic</h2>
+                            <div class="small-muted" id="stepSubtitle">Step 1 of 4</div>
+                        </div>
 
-          <div class="subtle p-3 mb-3">
-            <div class="small-muted">Recommended approach</div>
-            <div class="d-flex align-items-start justify-content-between gap-3 mt-1">
-              <div>
-                <div class="h2 mb-0 rec-title" id="recommendation">MMM</div>
-                <div class="small-muted" id="confidence">Confidence: Medium</div>
-              </div>
-              <div class="tag"><span class="mini"></span><span id="recTag">Holistic</span></div>
+                        <div class="stepper">
+                            <span class="step-dot" data-stepdot="1">1</span><span class="step-line"></span>
+                            <span class="step-dot" data-stepdot="2">2</span><span class="step-line"></span>
+                            <span class="step-dot" data-stepdot="3">3</span><span class="step-line"></span>
+                            <span class="step-dot" data-stepdot="4">4</span>
+                        </div>
+                    </div>
+
+                    <!-- STEP 1: Channels -->
+                    <div class="step active" data-step="1">
+                        <div class="mb-2">
+                            <div class="fw-semibold">Step 1: Choose your channels</div>
+                            <div class="small-muted">Tick what you actively spend on today.</div>
+                        </div>
+
+                        <div class="row g-2">
+                            <div class="col-12 col-md-6">
+                                <div class="subtle p-3">
+                                    <div class="fw-semibold mb-2">Digital</div>
+                                    <div class="form-check"><input class="form-check-input channel" type="checkbox"
+                                            value="paid_search" id="c1"><label class="form-check-label" for="c1">Paid
+                                            Search</label></div>
+                                    <div class="form-check"><input class="form-check-input channel" type="checkbox"
+                                            value="paid_social" id="c2"><label class="form-check-label" for="c2">Paid
+                                            Social</label></div>
+                                    <div class="form-check"><input class="form-check-input channel" type="checkbox"
+                                            value="display" id="c3"><label class="form-check-label" for="c3">Display /
+                                            Programmatic</label></div>
+                                    <div class="form-check"><input class="form-check-input channel" type="checkbox"
+                                            value="video" id="c4"><label class="form-check-label" for="c4">Video /
+                                            YouTube</label></div>
+                                    <div class="form-check"><input class="form-check-input channel" type="checkbox"
+                                            value="affiliate" id="c5"><label class="form-check-label"
+                                            for="c5">Affiliate</label></div>
+                                    <div class="form-check"><input class="form-check-input channel" type="checkbox"
+                                            value="retail_media" id="c6"><label class="form-check-label" for="c6">Retail
+                                            Media</label></div>
+                                    <div class="form-check"><input class="form-check-input channel" type="checkbox"
+                                            value="email_crm" id="c7"><label class="form-check-label" for="c7">Email /
+                                            CRM</label></div>
+                                    <div class="form-check"><input class="form-check-input channel" type="checkbox"
+                                            value="seo" id="c8"><label class="form-check-label" for="c8">SEO /
+                                            Organic</label></div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="subtle p-3">
+                                    <div class="fw-semibold mb-2">Offline</div>
+                                    <div class="form-check"><input class="form-check-input channel" type="checkbox"
+                                            value="tv" id="c9"><label class="form-check-label" for="c9">TV</label></div>
+                                    <div class="form-check"><input class="form-check-input channel" type="checkbox"
+                                            value="radio" id="c10"><label class="form-check-label"
+                                            for="c10">Radio</label></div>
+                                    <div class="form-check"><input class="form-check-input channel" type="checkbox"
+                                            value="ooh" id="c11"><label class="form-check-label" for="c11">Out of
+                                            Home</label></div>
+                                    <div class="form-check"><input class="form-check-input channel" type="checkbox"
+                                            value="print" id="c12"><label class="form-check-label"
+                                            for="c12">Print</label></div>
+                                    <div class="form-check"><input class="form-check-input channel" type="checkbox"
+                                            value="direct_mail" id="c13"><label class="form-check-label"
+                                            for="c13">Direct Mail</label></div>
+                                    <hr class="divider my-3">
+                                    <div class="fw-semibold mb-2">Commercial levers</div>
+                                    <div class="form-check"><input class="form-check-input channel" type="checkbox"
+                                            value="promos" id="c14"><label class="form-check-label" for="c14">Promotions
+                                            / Discounts</label></div>
+                                    <div class="form-check"><input class="form-check-input channel" type="checkbox"
+                                            value="in_store" id="c15"><label class="form-check-label" for="c15">In-store
+                                            / Trade</label></div>
+                                    <div class="form-check"><input class="form-check-input channel" type="checkbox"
+                                            value="pr" id="c16"><label class="form-check-label" for="c16">PR /
+                                            Sponsorships</label></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="small-muted mt-2">Pick at least one channel to continue.</div>
+                    </div>
+
+                    <!-- STEP 2: Budget + Revenue -->
+                    <div class="step" data-step="2">
+                        <div class="mb-2">
+                            <div class="fw-semibold">Step 2: Scale</div>
+                            <div class="small-muted">These help decide whether lightweight methods are enough.</div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label">Annual marketing budget (GBP)</label>
+                                <input id="budget" type="number" class="form-control" min="0" step="1000"
+                                    placeholder="e.g. 750000" value="2000000" />
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label">Annual revenue (GBP)</label>
+                                <input id="revenue" type="number" class="form-control" min="0" step="100000"
+                                    placeholder="e.g. 12000000" value="15000000" />
+                            </div>
+                            <div class="col-12">
+                                <div class="subtle p-3">
+                                    <div class="small-muted">
+                                        Tip: rough estimates are fine. This is directional.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: Context -->
+                    <div class="step" data-step="3">
+                        <div class="mb-2">
+                            <div class="fw-semibold">Step 3: Business context</div>
+                            <div class="small-muted">Helps tailor guidance and confidence.</div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label">Industry</label>
+                                <select id="industry" class="form-select">
+                                    <option value="ecomm">Ecommerce</option>
+                                    <option value="subscription">Subscription</option>
+                                    <option value="leadgen">Lead generation</option>
+                                    <option value="retail">Retail (offline heavy)</option>
+                                    <option value="travel">Travel</option>
+                                    <option value="finance">Finance</option>
+                                    <option value="fmcg">FMCG</option>
+                                    <option value="b2b">B2B</option>
+                                    <option value="other" selected>Other</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label class="form-label">Number of markets</label>
+                                <select id="markets" class="form-select">
+                                    <option value="1" selected>1</option>
+                                    <option value="2-5">2 to 5</option>
+                                    <option value="6+">6+</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label class="form-label">Weeks of historical data</label>
+                                <select id="historyWeeks" class="form-select">
+                                    <option value="0-52">0 to 52</option>
+                                    <option value="53-104">53 to 104</option>
+                                    <option value="105-156">105 to 156</option>
+                                    <option value="156+" selected>156+</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label class="form-label">Online sales share</label>
+                                <select id="onlineShare" class="form-select">
+                                    <option value="0-25">0 to 25%</option>
+                                    <option value="25-50">25 to 50%</option>
+                                    <option value="50-75">50 to 75%</option>
+                                    <option value="75+" selected>75%+</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 4: Data readiness -->
+                    <div class="step" data-step="4">
+                        <div class="mb-2">
+                            <div class="fw-semibold">Step 4: Data readiness</div>
+                            <div class="small-muted">This mostly drives confidence and next steps.</div>
+                        </div>
+
+                        <div class="subtle p-3">
+                            <div class="row g-3">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="weeklySpend" checked>
+                                        <label class="form-check-label" for="weeklySpend">Weekly spend by channel
+                                            exists</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="weeklyKpi" checked>
+                                        <label class="form-check-label" for="weeklyKpi">Weekly KPI time series
+                                            exists</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label mb-1">Digital conversion tracking</label>
+                                    <select id="trackingQuality" class="form-select">
+                                        <option value="yes" selected>Good</option>
+                                        <option value="partial">Partial</option>
+                                        <option value="no">Poor</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label mb-1">Can you run geo experiments?</label>
+                                    <select id="geoAbility" class="form-select">
+                                        <option value="yes">Yes</option>
+                                        <option value="not_sure" selected>Not sure</option>
+                                        <option value="no">No</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label mb-1">Incrementality testing experience</label>
+                                    <select id="incrExp" class="form-select">
+                                        <option value="yes">Yes</option>
+                                        <option value="no" selected>No</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="small-muted">
+                                        When you click “Show recommendation”, we’ll calculate and reveal the outputs on
+                                        the right.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Wizard controls -->
+                    <div class="d-flex flex-wrap gap-2 pt-3 align-items-center">
+                        <button class="btn btn-ghost" id="backBtn">Back</button>
+                        <button class="btn btn-brand" id="nextBtn">Next</button>
+                        <button class="btn btn-brand d-none" id="finishBtn">Show recommendation</button>
+                        <button class="btn btn-ghost ms-auto" id="resetBtn">Reset</button>
+                        <div class="small-muted ms-auto ms-lg-0" id="statusText"></div>
+                    </div>
+                </div>
             </div>
-            <div class="mt-3 small-muted" id="reasoning">
-              Fill in the inputs and click “Get my recommendation”.
+
+            <!-- Outputs -->
+            <div class="col-12 col-lg-12">
+                <div class="cardx p-3 p-md-4 h-100 d-none" id="outputCard">
+                    <h2 class="h5 mb-3">Recommendation</h2>
+
+                    <div class="subtle p-3 mb-3">
+                        <div class="small-muted">Recommended approach</div>
+                        <div class="row">
+
+                            <div class="col-lg-5 mt-1">
+                                <div>
+                                    <div class="h2 mb-0 rec-title" id="recommendation">MMM</div>
+                                    <div class="small-muted" id="confidence">Confidence: Medium</div>
+                                </div>
+                                <div class="tag"><span class="mini"></span><span id="recTag">Holistic</span></div>
+                                <div class="mt-3 small-muted" id="reasoning">
+                                    Complete the steps to see your recommendation.
+                                </div>
+                            </div>
+                            <div class="col-lg-7 subtle p-3 mb-3">
+                                <div class="fw-semibold mb-2">Suitability scores</div>
+                                <canvas id="scoreChart" height="165"></canvas>
+                                <div class="small-muted mt-2">Directional guidance based on your inputs.</div>
+                            </div>
+                        </div>
+
+
+                        <div class="subtle p-3">
+                            <div class="fw-semibold mb-2">Next steps</div>
+                            <ul class="mb-0" id="nextSteps"></ul>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-
-          <div class="subtle p-3 mb-3">
-            <div class="fw-semibold mb-2">Suitability scores</div>
-            <canvas id="scoreChart" height="165"></canvas>
-            <div class="small-muted mt-2">Directional guidance based on your inputs.</div>
-          </div>
-
-          <div class="subtle p-3">
-            <div class="fw-semibold mb-2">Next steps</div>
-            <ul class="mb-0" id="nextSteps"></ul>
-          </div>
-
-          <div class="mt-3 small-muted">
-            Optional conversion add-on: a “Send me the summary” field later to capture leads.
-          </div>
         </div>
-      </div>
+
+        <div class="mt-4">
+            <div class="cardx p-3 p-md-4">
+                <div class="fw-semibold mb-1">Flags this tool will highlight</div>
+                <ul class="mb-0 small-muted">
+                    <li>If revenue is high but the channel mix is narrow, you may be saturating quickly or leaving
+                        growth on the table.</li>
+                    <li>MMM is strongest with 2 to 3 years of weekly data and consistent spend tracking.</li>
+                    <li>Lift testing is best when you can hold out markets or audiences with minimal leakage.</li>
+                </ul>
+            </div>
+        </div>
     </div>
 
-    <div class="mt-4">
-      <div class="cardx p-3 p-md-4">
-        <div class="fw-semibold mb-1">Flags this tool will highlight</div>
-        <ul class="mb-0 small-muted">
-          <li>If revenue is high but the channel mix is narrow, you may be saturating quickly or leaving growth on the table.</li>
-          <li>MMM is strongest with 2 to 3 years of weekly data and consistent spend tracking.</li>
-          <li>Lift testing is best when you can hold out markets or audiences with minimal leakage.</li>
-        </ul>
-      </div>
-    </div>
-  </div>
+    <script>
+        // ---------------------------
+        // Existing scoring logic
+        // ---------------------------
+        const fmtGBP = (n) => {
+            if (!Number.isFinite(n)) return '£0';
+            return new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 }).format(n);
+        };
 
-  <script>
-    const fmtGBP = (n) => {
-      if (!Number.isFinite(n)) return '£0';
-      return new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 }).format(n);
-    };
+        const getCheckedChannels = () =>
+            Array.from(document.querySelectorAll('.channel:checked')).map(x => x.value);
 
-    const getCheckedChannels = () =>
-      Array.from(document.querySelectorAll('.channel:checked')).map(x => x.value);
+        const classifyChannels = (channels) => {
+            const digitalSet = new Set(['paid_search', 'paid_social', 'display', 'video', 'affiliate', 'retail_media', 'email_crm', 'seo']);
+            const offlineSet = new Set(['tv', 'radio', 'ooh', 'print', 'direct_mail']);
+            const hasDigital = channels.some(c => digitalSet.has(c));
+            const hasOffline = channels.some(c => offlineSet.has(c));
+            return { hasDigital, hasOffline };
+        };
 
-    const classifyChannels = (channels) => {
-      const digitalSet = new Set(['paid_search','paid_social','display','video','affiliate','retail_media','email_crm','seo']);
-      const offlineSet = new Set(['tv','radio','ooh','print','direct_mail']);
-      const hasDigital = channels.some(c => digitalSet.has(c));
-      const hasOffline = channels.some(c => offlineSet.has(c));
-      return { hasDigital, hasOffline };
-    };
+        const scoreClamp = (x) => Math.max(0, Math.min(100, Math.round(x)));
 
-    const scoreClamp = (x) => Math.max(0, Math.min(100, Math.round(x)));
+        function buildRecommendation(inputs) {
+            const {
+                channels, budget, revenue, historyWeeks, weeklySpend, weeklyKpi,
+                trackingQuality, geoAbility, markets, onlineShare
+            } = inputs;
 
-    function buildRecommendation(inputs){
-      const {
-        channels, budget, revenue, historyWeeks, weeklySpend, weeklyKpi,
-        trackingQuality, geoAbility, markets, onlineShare
-      } = inputs;
+            const { hasDigital, hasOffline } = classifyChannels(channels);
+            const channelCount = channels.length;
+            const smallBudget = budget > 0 && budget < 1_000_000;
 
-      const { hasDigital, hasOffline } = classifyChannels(channels);
-      const channelCount = channels.length;
-      const smallBudget = budget > 0 && budget < 1_000_000;
+            let sMMM = 50, sMTA = 40, sLIFT = 35;
 
-      let sMMM = 50, sMTA = 40, sLIFT = 35;
+            if (hasOffline) { sMMM += 18; sLIFT += 12; sMTA -= 18; }
+            if (hasDigital) { sMTA += 14; sMMM += 6; }
 
-      if (hasOffline) { sMMM += 18; sLIFT += 12; sMTA -= 18; }
-      if (hasDigital) { sMTA += 14; sMMM += 6; }
+            if (channelCount <= 2) { sMTA += 10; sLIFT += 8; sMMM -= 10; }
+            if (channelCount >= 5) { sMMM += 14; sMTA -= 6; }
 
-      if (channelCount <= 2) { sMTA += 10; sLIFT += 8; sMMM -= 10; }
-      if (channelCount >= 5) { sMMM += 14; sMTA -= 6; }
+            if (smallBudget) { sMTA += 10; sLIFT += 8; sMMM -= 6; }
+            if (budget >= 3_000_000) { sMMM += 10; sLIFT += 6; }
 
-      if (smallBudget) { sMTA += 10; sLIFT += 8; sMMM -= 6; }
-      if (budget >= 3_000_000) { sMMM += 10; sLIFT += 6; }
+            if (weeklySpend && weeklyKpi) sMMM += 12;
+            if (!weeklySpend || !weeklyKpi) sMMM -= 18;
 
-      if (weeklySpend && weeklyKpi) sMMM += 12;
-      if (!weeklySpend || !weeklyKpi) sMMM -= 18;
+            if (historyWeeks === '0-52') sMMM -= 18;
+            if (historyWeeks === '53-104') sMMM -= 8;
+            if (historyWeeks === '105-156') sMMM += 2;
+            if (historyWeeks === '156+') sMMM += 10;
 
-      if (historyWeeks === '0-52') sMMM -= 18;
-      if (historyWeeks === '53-104') sMMM -= 8;
-      if (historyWeeks === '105-156') sMMM += 2;
-      if (historyWeeks === '156+') sMMM += 10;
+            if (trackingQuality === 'yes') sMTA += 12;
+            if (trackingQuality === 'partial') sMTA += 4;
+            if (trackingQuality === 'no') sMTA -= 12;
 
-      if (trackingQuality === 'yes') sMTA += 12;
-      if (trackingQuality === 'partial') sMTA += 4;
-      if (trackingQuality === 'no') sMTA -= 12;
+            if (geoAbility === 'yes') sLIFT += 18;
+            if (geoAbility === 'not_sure') sLIFT += 4;
+            if (geoAbility === 'no') sLIFT -= 10;
 
-      if (geoAbility === 'yes') sLIFT += 18;
-      if (geoAbility === 'not_sure') sLIFT += 4;
-      if (geoAbility === 'no') sLIFT -= 10;
+            if (markets === '1') sLIFT -= 6;
+            if (markets === '6+') sLIFT += 6;
 
-      if (markets === '1') sLIFT -= 6;
-      if (markets === '6+') sLIFT += 6;
+            if (onlineShare === '75+') sMTA += 8;
+            if (onlineShare === '0-25') sMTA -= 8;
 
-      if (onlineShare === '75+') sMTA += 8;
-      if (onlineShare === '0-25') sMTA -= 8;
+            if (revenue >= 50_000_000) sMMM += 6;
 
-      if (revenue >= 50_000_000) sMMM += 6;
+            sMMM = scoreClamp(sMMM);
+            sMTA = scoreClamp(sMTA);
+            sLIFT = scoreClamp(sLIFT);
 
-      sMMM = scoreClamp(sMMM);
-      sMTA = scoreClamp(sMTA);
-      sLIFT = scoreClamp(sLIFT);
+            let primary = 'MMM';
+            const fewerThan3 = channelCount > 0 && channelCount < 3;
 
-      let primary = 'MMM';
-      const fewerThan3 = channelCount > 0 && channelCount < 3;
+            if (hasDigital && !hasOffline && fewerThan3 && smallBudget) primary = 'MTA';
+            else if (hasOffline && !hasDigital && fewerThan3 && smallBudget) primary = 'Lift tests';
+            else {
+                const pairs = [
+                    { k: 'MMM', v: sMMM },
+                    { k: 'MTA', v: sMTA },
+                    { k: 'Lift tests', v: sLIFT }
+                ].sort((a, b) => b.v - a.v);
+                primary = pairs[0].k;
+            }
 
-      if (hasDigital && !hasOffline && fewerThan3 && smallBudget) primary = 'MTA';
-      else if (hasOffline && !hasDigital && fewerThan3 && smallBudget) primary = 'Lift tests';
-      else {
-        const pairs = [
-          {k:'MMM', v:sMMM},
-          {k:'MTA', v:sMTA},
-          {k:'Lift tests', v:sLIFT}
-        ].sort((a,b) => b.v - a.v);
-        primary = pairs[0].k;
-      }
+            let conf = 'Medium';
+            let confReason = [];
 
-      let conf = 'Medium';
-      let confReason = [];
+            if (primary === 'MMM') {
+                if (!weeklySpend || !weeklyKpi) confReason.push('weekly spend or KPI data is missing');
+                if (historyWeeks === '0-52') confReason.push('only up to 1 year of history');
+                if (channelCount < 4) confReason.push('limited channel variation');
+                if (confReason.length >= 2) conf = 'Low';
+                else if (confReason.length === 0) conf = 'High';
+            }
 
-      if (primary === 'MMM') {
-        if (!weeklySpend || !weeklyKpi) confReason.push('weekly spend or KPI data is missing');
-        if (historyWeeks === '0-52') confReason.push('only up to 1 year of history');
-        if (channelCount < 4) confReason.push('limited channel variation');
-        if (confReason.length >= 2) conf = 'Low';
-        else if (confReason.length === 0) conf = 'High';
-      }
+            if (primary === 'MTA') {
+                if (trackingQuality === 'no') confReason.push('tracking quality is poor');
+                if (hasOffline) confReason.push('offline spend is present');
+                conf = (confReason.length === 0) ? 'High' : (confReason.length === 1 ? 'Medium' : 'Low');
+            }
 
-      if (primary === 'MTA') {
-        if (trackingQuality === 'no') confReason.push('tracking quality is poor');
-        if (hasOffline) confReason.push('offline spend is present');
-        conf = (confReason.length === 0) ? 'High' : (confReason.length === 1 ? 'Medium' : 'Low');
-      }
+            if (primary === 'Lift tests') {
+                if (geoAbility === 'no') confReason.push('geo holdouts not feasible');
+                if (markets === '1') confReason.push('single market makes clean holdouts harder');
+                conf = (confReason.length === 0) ? 'High' : (confReason.length === 1 ? 'Medium' : 'Low');
+            }
 
-      if (primary === 'Lift tests') {
-        if (geoAbility === 'no') confReason.push('geo holdouts not feasible');
-        if (markets === '1') confReason.push('single market makes clean holdouts harder');
-        conf = (confReason.length === 0) ? 'High' : (confReason.length === 1 ? 'Medium' : 'Low');
-      }
+            const notes = [];
+            const next = [];
 
-      const notes = [];
-      const next = [];
+            if (revenue > 50_000_000 && channelCount > 0 && channelCount <= 3) {
+                notes.push('With revenue above £50M and a narrow channel mix, consider testing new channels or verifying saturation before scaling spend.');
+            }
+            if (primary === 'MMM' && (historyWeeks === '0-52' || historyWeeks === '53-104')) {
+                notes.push('MMM performs best with 2 to 3 years of weekly data. With less history, consider tests first or accept lower confidence.');
+            }
 
-      if (revenue > 50_000_000 && channelCount > 0 && channelCount <= 3) {
-        notes.push('With revenue above £50M and a narrow channel mix, consider testing new channels or verifying saturation before scaling spend.');
-      }
-      if (primary === 'MMM' && (historyWeeks === '0-52' || historyWeeks === '53-104')) {
-        notes.push('MMM performs best with 2 to 3 years of weekly data. With less history, consider tests first or accept lower confidence.');
-      }
+            if (primary === 'MMM') {
+                next.push('Confirm you have weekly spend by channel and a weekly KPI (sales, leads, revenue).');
+                next.push('Aim for 2 to 3 years of consistent history (including price, promos, distribution if relevant).');
+                next.push('Agree the decision you want MMM to drive (budget setting, channel ROI, forecasting, scenario planning).');
+                next.push('Where possible, validate MMM with lift tests on major channels.');
+            } else if (primary === 'MTA') {
+                next.push('Standardise UTMs and channel taxonomy across all campaigns.');
+                next.push('Audit conversion tracking, deduplication, and offline conversion imports (if applicable).');
+                next.push('Use incrementality tests as a guardrail for key digital channels.');
+                next.push('If offline is meaningful, pair MTA with MMM or experiments to avoid blind spots.');
+            } else {
+                next.push('Pick testable markets or audiences and define a clean holdout with minimal leakage.');
+                next.push('Align on KPI, measurement window, and what “success” means before launching.');
+                next.push('Prioritise channels where uncertainty is highest (TV, OOH, broad social, retail media).');
+                next.push('Use results to calibrate planning, then consider MMM for always-on optimisation.');
+            }
 
-      if (primary === 'MMM') {
-        next.push('Confirm you have weekly spend by channel and a weekly KPI (sales, leads, revenue).');
-        next.push('Aim for 2 to 3 years of consistent history (including price, promos, distribution if relevant).');
-        next.push('Agree the decision you want MMM to drive (budget setting, channel ROI, forecasting, scenario planning).');
-        next.push('Where possible, validate MMM with lift tests on major channels.');
-      } else if (primary === 'MTA') {
-        next.push('Standardise UTMs and channel taxonomy across all campaigns.');
-        next.push('Audit conversion tracking, deduplication, and offline conversion imports (if applicable).');
-        next.push('Use incrementality tests as a guardrail for key digital channels.');
-        next.push('If offline is meaningful, pair MTA with MMM or experiments to avoid blind spots.');
-      } else {
-        next.push('Pick testable markets or audiences and define a clean holdout with minimal leakage.');
-        next.push('Align on KPI, measurement window, and what “success” means before launching.');
-        next.push('Prioritise channels where uncertainty is highest (TV, OOH, broad social, retail media).');
-        next.push('Use results to calibrate planning, then consider MMM for always-on optimisation.');
-      }
+            let tag = 'Balanced';
+            if (primary === 'MMM') tag = 'Holistic';
+            if (primary === 'MTA') tag = 'Digital-first';
+            if (primary === 'Lift tests') tag = 'Causal proof';
 
-      let tag = 'Balanced';
-      if (primary === 'MMM') tag = 'Holistic';
-      if (primary === 'MTA') tag = 'Digital-first';
-      if (primary === 'Lift tests') tag = 'Causal proof';
+            const reasoning = [];
+            reasoning.push(`Budget: ${fmtGBP(budget)}. Revenue: ${fmtGBP(revenue)}. Channels selected: ${channelCount || 0}.`);
+            reasoning.push(`You have ${hasDigital ? 'digital' : 'no digital'} and ${hasOffline ? 'offline' : 'no offline'} channels.`);
+            if (!weeklySpend || !weeklyKpi) reasoning.push('Data readiness is a constraint for modelling.');
+            if (notes.length) reasoning.push(...notes);
 
-      const reasoning = [];
-      reasoning.push(`Budget: ${fmtGBP(budget)}. Revenue: ${fmtGBP(revenue)}. Channels selected: ${channelCount || 0}.`);
-      reasoning.push(`You have ${hasDigital ? 'digital' : 'no digital'} and ${hasOffline ? 'offline' : 'no offline'} channels.`);
-      if (!weeklySpend || !weeklyKpi) reasoning.push('Data readiness is a constraint for modelling.');
-      if (notes.length) reasoning.push(...notes);
-
-      return {
-        primary,
-        confidence: conf,
-        tag,
-        reasoning: reasoning.join(' '),
-        nextSteps: next,
-        scores: { MMM: sMMM, MTA: sMTA, LIFT: sLIFT }
-      };
-    }
-
-    // Chart
-    const ctx = document.getElementById('scoreChart');
-    const scoreChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['MMM','MTA','Lift tests'],
-        datasets: [{
-          label: 'Suitability',
-          data: [50,40,35],
-          borderWidth: 0,
-          borderRadius: 10
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: { label: (c) => ` ${c.raw}/100` }
-          }
-        },
-        scales: {
-          x: {
-            grid: { display: false },
-            ticks: { color: 'rgba(17,28,40,.70)' }
-          },
-          y: {
-            suggestedMin: 0,
-            suggestedMax: 100,
-            ticks: { color: 'rgba(17,28,40,.70)' },
-            grid: { color: 'rgba(17,28,40,.10)' }
-          }
+            return {
+                primary,
+                confidence: conf,
+                tag,
+                reasoning: reasoning.join(' '),
+                nextSteps: next,
+                scores: { MMM: sMMM, MTA: sMTA, LIFT: sLIFT }
+            };
         }
-      }
-    });
 
-    function readInputs(){
-      return {
-        channels: getCheckedChannels(),
-        budget: Number(document.getElementById('budget').value || 0),
-        revenue: Number(document.getElementById('revenue').value || 0),
-        industry: document.getElementById('industry').value,
-        markets: document.getElementById('markets').value,
-        historyWeeks: document.getElementById('historyWeeks').value,
-        onlineShare: document.getElementById('onlineShare').value,
-        weeklySpend: document.getElementById('weeklySpend').checked,
-        weeklyKpi: document.getElementById('weeklyKpi').checked,
-        trackingQuality: document.getElementById('trackingQuality').value,
-        geoAbility: document.getElementById('geoAbility').value,
-        incrExp: document.getElementById('incrExp').value
-      };
-    }
+        function readInputs() {
+            return {
+                channels: getCheckedChannels(),
+                budget: Number(document.getElementById('budget').value || 0),
+                revenue: Number(document.getElementById('revenue').value || 0),
+                industry: document.getElementById('industry').value,
+                markets: document.getElementById('markets').value,
+                historyWeeks: document.getElementById('historyWeeks').value,
+                onlineShare: document.getElementById('onlineShare').value,
+                weeklySpend: document.getElementById('weeklySpend').checked,
+                weeklyKpi: document.getElementById('weeklyKpi').checked,
+                trackingQuality: document.getElementById('trackingQuality').value,
+                geoAbility: document.getElementById('geoAbility').value,
+                incrExp: document.getElementById('incrExp').value
+            };
+        }
 
-    function paintResults(res){
-      document.getElementById('recommendation').textContent = res.primary;
-      document.getElementById('confidence').textContent = `Confidence: ${res.confidence}`;
-      document.getElementById('recTag').textContent = res.tag;
-      document.getElementById('reasoning').textContent = res.reasoning;
+        function paintResults(res) {
+            document.getElementById('recommendation').textContent = res.primary;
+            document.getElementById('confidence').textContent = `Confidence: ${res.confidence}`;
+            document.getElementById('recTag').textContent = res.tag;
+            document.getElementById('reasoning').textContent = res.reasoning;
 
-      const ul = document.getElementById('nextSteps');
-      ul.innerHTML = '';
-      res.nextSteps.forEach(t => {
-        const li = document.createElement('li');
-        li.textContent = t;
-        ul.appendChild(li);
-      });
+            const ul = document.getElementById('nextSteps');
+            ul.innerHTML = '';
+            res.nextSteps.forEach(t => {
+                const li = document.createElement('li');
+                li.textContent = t;
+                ul.appendChild(li);
+            });
 
-      scoreChart.data.datasets[0].data = [res.scores.MMM, res.scores.MTA, res.scores.LIFT];
-      scoreChart.update();
-    }
+            scoreChart.data.datasets[0].data = [res.scores.MMM, res.scores.MTA, res.scores.LIFT];
+            scoreChart.update();
+        }
 
-    document.getElementById('runBtn').addEventListener('click', () => {
-      document.getElementById('statusText').textContent = 'Updating…';
-      const res = buildRecommendation(readInputs());
-      paintResults(res);
-      document.getElementById('statusText').textContent = 'Done';
-      setTimeout(() => document.getElementById('statusText').textContent = '', 1200);
-    });
+        // ---------------------------
+        // Chart (same as you had)
+        // ---------------------------
+        Chart.register(ChartDataLabels);
 
-    document.getElementById('resetBtn').addEventListener('click', () => {
-      document.querySelectorAll('.channel').forEach(x => x.checked = false);
-      document.getElementById('budget').value = '';
-      document.getElementById('revenue').value = '';
-      document.getElementById('industry').value = 'other';
-      document.getElementById('markets').value = '1';
-      document.getElementById('historyWeeks').value = '156+';
-      document.getElementById('onlineShare').value = '75+';
-      document.getElementById('weeklySpend').checked = true;
-      document.getElementById('weeklyKpi').checked = true;
-      document.getElementById('trackingQuality').value = 'yes';
-      document.getElementById('geoAbility').value = 'not_sure';
-      document.getElementById('incrExp').value = 'no';
+        const ctx = document.getElementById('scoreChart');
+        const scoreChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['MMM', 'MTA', 'Lift tests'],
+                datasets: [{
+                    label: 'Suitability',
+                    data: [50, 40, 35],
+                    backgroundColor: "#21caab7f",
+                    borderWidth: 0,
+                    borderRadius: 10,
+                    barPercentage: 0.65,
+                    categoryPercentage: 0.7
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: { label: c => ` ${c.raw}/100` }
+                    },
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'end',
+                        offset: 6,
+                        formatter: v => `${v}`,
+                        color: '#111C28',
+                        font: { weight: '700', size: 13 }
+                    }
+                },
+                scales: {
+                    x: { display: true, grid: { display: true } },
+                    y: { display: false, grid: { display: false }, suggestedMin: 0, suggestedMax: 100 }
+                }
+            }
+        });
 
-      paintResults({
-        primary: 'MMM',
-        confidence: 'Medium',
-        tag: 'Holistic',
-        reasoning: 'Fill in the inputs and click “Get my recommendation”.',
-        nextSteps: [],
-        scores: { MMM: 50, MTA: 40, LIFT: 35 }
-      });
-    });
-  </script>
+        // ---------------------------
+        // Wizard logic
+        // ---------------------------
+        let currentStep = 1;
+        const totalSteps = 4;
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        const stepSubtitle = document.getElementById('stepSubtitle');
+        const backBtn = document.getElementById('backBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const finishBtn = document.getElementById('finishBtn');
+        const wizContainer = document.getElementById('wizContainer')
+        const resetBtn = document.getElementById('resetBtn');
+        const outputCard = document.getElementById('outputCard');
+        const statusText = document.getElementById('statusText');
+
+        function showStep(n) {
+            currentStep = n;
+
+            document.querySelectorAll('.step').forEach(el => {
+                el.classList.toggle('active', Number(el.dataset.step) === currentStep);
+            });
+
+            // Stepper dots
+            for (let i = 1; i <= totalSteps; i++) {
+                const dot = document.querySelector(`[data-stepdot="${i}"]`);
+                dot.classList.toggle('active', i === currentStep);
+                dot.classList.toggle('done', i < currentStep);
+            }
+
+            stepSubtitle.textContent = `Step ${currentStep} of ${totalSteps}`;
+
+            backBtn.disabled = currentStep === 1;
+
+            const isLast = currentStep === totalSteps;
+            nextBtn.classList.toggle('d-none', isLast);
+            finishBtn.classList.toggle('d-none', !isLast);
+
+            // keep outputs hidden until finish
+            if (currentStep !== totalSteps) {
+                outputCard.classList.add('d-none');
+            }
+
+            // Update button state
+            updateNavState();
+        }
+
+        function validateStep(n) {
+            if (n === 1) {
+                return getCheckedChannels().length > 0;
+            }
+            if (n === 2) {
+                const b = Number(document.getElementById('budget').value || 0);
+                const r = Number(document.getElementById('revenue').value || 0);
+                // allow zero, but require at least one of them entered to move on
+                return (b > 0 || r > 0);
+            }
+            // steps 3 and 4 can always pass
+            return true;
+        }
+
+        function updateNavState() {
+            const ok = validateStep(currentStep);
+            if (currentStep < totalSteps) nextBtn.disabled = !ok;
+            if (currentStep === totalSteps) finishBtn.disabled = false;
+            statusText.textContent = ok ? '' : (currentStep === 1 ? 'Pick at least one channel' : 'Enter budget or revenue');
+        }
+
+        function goNext() {
+            if (!validateStep(currentStep)) return;
+            showStep(Math.min(totalSteps, currentStep + 1));
+        }
+
+        function goBack() {
+            showStep(Math.max(1, currentStep - 1));
+        }
+
+        // Events to re-check validation as user types
+        document.querySelectorAll('.channel').forEach(el => el.addEventListener('change', updateNavState));
+        document.getElementById('budget').addEventListener('input', updateNavState);
+        document.getElementById('revenue').addEventListener('input', updateNavState);
+
+        backBtn.addEventListener('click', goBack);
+        nextBtn.addEventListener('click', goNext);
+
+        finishBtn.addEventListener('click', () => {
+            statusText.textContent = 'Updating…';
+            const res = buildRecommendation(readInputs());
+            paintResults(res);
+            outputCard.classList.remove('d-none');
+            wizContainer.classList.add('d-none');
+            statusText.textContent = 'Done';
+            setTimeout(() => statusText.textContent = '', 900);
+
+            // optional: scroll to outputs on mobile
+            outputCard.scrollIntoView({ behaviour: 'smooth', block: 'start' });
+        });
+
+        resetBtn.addEventListener('click', () => {
+            document.querySelectorAll('.channel').forEach(x => x.checked = false);
+            document.getElementById('budget').value = '';
+            document.getElementById('revenue').value = '';
+            document.getElementById('industry').value = 'other';
+            document.getElementById('markets').value = '1';
+            document.getElementById('historyWeeks').value = '156+';
+            document.getElementById('onlineShare').value = '75+';
+            document.getElementById('weeklySpend').checked = true;
+            document.getElementById('weeklyKpi').checked = true;
+            document.getElementById('trackingQuality').value = 'yes';
+            document.getElementById('geoAbility').value = 'not_sure';
+            document.getElementById('incrExp').value = 'no';
+
+            paintResults({
+                primary: 'MMM',
+                confidence: 'Medium',
+                tag: 'Holistic',
+                reasoning: 'Complete the steps to see your recommendation.',
+                nextSteps: [],
+                scores: { MMM: 50, MTA: 40, LIFT: 35 }
+            });
+
+            outputCard.classList.add('d-none');
+            showStep(1);
+        });
+
+        // Start
+        showStep(1);
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
